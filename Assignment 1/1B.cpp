@@ -16,12 +16,10 @@ long long factorial(long long n)
     }
 }
 
-int nqueens(int process, long long i, long long n, vector<int> fact)
+int nqueens(long long i, long long n, vector<int> fact)
 {
 
     int a, b = 0;
-
-    // way to generate the permutations
 
     vector<int> perm(n);
     for (b = 0; b < n; b++)
@@ -82,16 +80,24 @@ int main(int argc, char *argv[])
 
     for (i = rank; i < max; i += size)
     {
-        subtotal += nqueens(rank, i, n, pre_fact);
+        subtotal += nqueens(i, n, pre_fact);
     }
-
+    MPI_Reduce(&subtotal, &total, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Barrier(MPI_COMM_WORLD);
     double end_time = MPI_Wtime();
-
-    MPI_Reduce(&subtotal, &total, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-
     if (rank == 0)
     {
+        ofstream file("matrix.txt", ios::app); // Open file in append mode
+        if (file.is_open())
+        {
+            file << "Number of Processes: " << size << "\t";
+            file << "Time taken: " << end_time - start_time << " seconds" << endl;
+            file.close();
+        }
+        else
+        {
+            cout << "Unable to open file" << endl;
+        }
         cout << "Total solutions: " << total << endl;
         cout << "Time taken: " << end_time - start_time << endl;
     }
