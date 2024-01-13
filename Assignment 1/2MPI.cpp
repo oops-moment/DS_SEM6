@@ -22,24 +22,52 @@ void printvec(vector<vector<int>> vec)
 int main(int argc, char *argv[])
 {
     int rank, processes;
-    int N = 4; // Initialize N before using it
+    int N = 5; // Initialize N before using it
+               
     vector<vector<int>> vec(N, vector<int>(N, 0));
+    // vec[0][0] = 0;
+    // vec[0][1] = 2;
+    // vec[0][2] = 1e9;
+    // vec[0][3] = 1e9;
+    // vec[1][0] = 1;
+    // vec[1][1] = 0;
+    // vec[1][2] = 3;
+    // vec[1][3] = 1e9;
+    // vec[2][0] = 1e9;
+    // vec[2][1] = 1e9;
+    // vec[2][2] = 0;
+    // vec[2][3] = 1e9;
+    // vec[3][0] = 3;
+    // vec[3][1] = 5;
+    // vec[3][2] = 4;
+    // vec[3][3] = 0;
+
     vec[0][0] = 0;
-    vec[0][1] = 2;
+    vec[0][1] = 4;
     vec[0][2] = 1e9;
-    vec[0][3] = 1e9;
-    vec[1][0] = 1;
+    vec[0][3] = 5;
+    vec[0][4] = 1e9;
+    vec[1][0] = 1e9;
     vec[1][1] = 0;
-    vec[1][2] = 3;
+    vec[1][2] = 1;
     vec[1][3] = 1e9;
-    vec[2][0] = 1e9;
+    vec[1][4] = 6;
+    vec[2][0] = 2;
     vec[2][1] = 1e9;
     vec[2][2] = 0;
-    vec[2][3] = 1e9;
-    vec[3][0] = 3;
-    vec[3][1] = 5;
-    vec[3][2] = 4;
+    vec[2][3] = 3;
+    vec[2][4] = 1e9;
+    vec[3][0] = 1e9;
+    vec[3][1] = 1e9;
+    vec[3][2] = 1;
     vec[3][3] = 0;
+    vec[3][4] = 2;
+    vec[4][0] = 1;
+    vec[4][1] = 1e9;
+    vec[4][2] = 1e9;
+    vec[4][3] = 4;
+    vec[4][4] = 0;
+
     MPI_Status status;
 
     MPI_Init(&argc, &argv);

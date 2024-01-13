@@ -106,7 +106,8 @@ int main(int argc, char *argv[])
                 }
             }
         }
-        MPI_Send(0, 0, MPI_INT, 0, 2, MPI_COMM_WORLD);
+        int message = 0;
+        MPI_Send(&message, 1, MPI_INT, 0, 2, MPI_COMM_WORLD);
     }
 
     MPI_Finalize();
