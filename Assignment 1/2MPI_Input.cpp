@@ -2,31 +2,14 @@
 #include "mpi.h"
 using namespace std;
 
-void printvec(vector<vector<int>> vec)
-{
-    for (int i = 0; i < vec.size(); i++)
-    {
-        for (int j = 0; j < vec.size(); j++)
-        {
-            if (vec[i][j] == 0 && i != j)
-                cout << "-1"
-                     << " ";
-            else
-                cout << vec[i][j] << " ";
-        }
-        cout << "\n";
-    }
-    cout << "\n";
-}
-
 int main(int argc, char *argv[])
 {
     int rank, processes;
-    int N = 5; // Initialize N before using it
-
-    vector<vector<int>> vec(N, vector<int>(N, 0));
+    const int MAXLEN = 20;
 
     MPI_Status status;
+    long long buffer[MAXLEN][MAXLEN];
+    long long N = 0;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &processes);
@@ -34,72 +17,81 @@ int main(int argc, char *argv[])
 
     if (rank == 0)
     {
-        // take inout here
         cin >> N;
-        vec.resize(N, vector<int>(N, 0));
-        for (int i = 0; i < N; i++)
+        for (long long i = 0; i < N; i++)
         {
-            for (int j = 0; j < N; j++)
+            for (long long j = 0; j < N; j++)
             {
-                cin >> vec[i][j];
-                if (vec[i][j] == -1)
-                    vec[i][j] = 0;
+                cin >> buffer[i][j];
+                if (buffer[i][j] == -1)
+                    buffer[i][j] = 1e9;
             }
         }
 
         for (int i = 1; i < processes; i++)
-        {
-            MPI_Send(&N, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
-            MPI_Send(&vec[0][0], N * N, MPI_INT, i, 1, MPI_COMM_WORLD);
-        }
+            MPI_Send(&N, 1, MPI_LONG_LONG, i, 15, MPI_COMM_WORLD);
 
-        vector<int> result(3);
+        for (int i = 1; i < processes; i++)
+            MPI_Send(buffer, N * N, MPI_LONG_LONG, i, 17, MPI_COMM_WORLD);
+
+        long long result[3];
         int disable = 0;
         do
         {
-            MPI_Recv(&result[0], 3, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-            if (status.MPI_TAG == 2)
+            MPI_Recv(result, 3, MPI_LONG_LONG, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+            if (status.MPI_TAG == 25)
                 disable++;
             else
-                vec[result[1]][result[2]] = min(vec[result[1]][result[2]], result[0]);
+            {
+                buffer[result[1]][result[2]] = min(buffer[result[1]][result[2]], result[0]);
+
+                // Broadcast only the updated part of the buffer
+                for (int i = 1; i < processes; i++)
+                {
+                    MPI_Send(&buffer[result[1]], N, MPI_LONG_LONG, i, 17, MPI_COMM_WORLD);
+                }
+            }
+
         } while (disable < processes - 1);
 
-        printvec(vec);
+        for (long long i = 0; i < N; i++)
+        {
+            for (long long j = 0; j < N; j++)
+            {
+                if (buffer[i][j] == 1e9)
+                    cout << "-1"
+                         << " ";
+                else
+                    cout << buffer[i][j] << " ";
+            }
+            cout << "\n";
+        }
+        cout << "\n";
     }
     else
     {
-        MPI_Recv(&N, 1, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-        MPI_Recv(&vec[0][0], N * N, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+        MPI_Recv(&N, 1, MPI_LONG_LONG, 0, 15, MPI_COMM_WORLD, &status);
+        MPI_Recv(buffer, N * N, MPI_LONG_LONG, 0, 17, MPI_COMM_WORLD, &status);
 
-        int remainder = N % (processes - 1);
-        int slices = (N - remainder) / (processes - 1);
+        long long remainder = N % (processes - 1);
+        long long slices = (N - remainder) / (processes - 1);
         if (rank + 1 != processes)
             remainder = 0;
 
-        vector<int> out(3);
-
-        for (int k = slices * (rank - 1); k < (slices * (rank - 1) + slices + remainder); k++)
-        {
-            for (int i = 0; i < N; ++i)
-            {
-                for (int j = 0; j < N; ++j)
-                {
-                    if (vec[i][k] * vec[k][j] != 0 && i != j)
+        long long out[3];
+        for (long long k = slices * (rank - 1); k < (slices * (rank - 1) + slices + remainder); k++)
+            for (long long i = 0; i < N; ++i)
+                for (long long j = 0; j < N; ++j)
+                    if ((buffer[i][k] + buffer[k][j] < buffer[i][j]))
                     {
-                        if ((vec[i][k] + vec[k][j] < vec[i][j]) || (vec[i][j] == 0))
-                        {
-                            vec[i][j] = vec[i][k] + vec[k][j];
-                            out[0] = vec[i][j];
-                            out[1] = i;
-                            out[2] = j;
-                            MPI_Send(&out[0], 3, MPI_INT, 0, 0, MPI_COMM_WORLD);
-                        }
+                        buffer[i][j] = buffer[i][k] + buffer[k][j];
+                        out[0] = buffer[i][j];
+                        out[1] = i;
+                        out[2] = j;
+                        MPI_Send(out, 3, MPI_LONG_LONG, 0, 0, MPI_COMM_WORLD);
                     }
-                }
-            }
-        }
-
-        MPI_Send(&out[0], 3, MPI_INT, 0, 2, MPI_COMM_WORLD);
+        int message = 1;
+        MPI_Send(&message, 1, MPI_INT, 0, 25, MPI_COMM_WORLD);
     }
 
     MPI_Finalize();
