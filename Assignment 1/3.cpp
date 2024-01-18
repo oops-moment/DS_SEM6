@@ -35,12 +35,12 @@ int main(int argc, char *argv[])
     // Number of rows each process is going to take would be N/number of processes, given the last process some extra rows
     int nRowsLocal = nRows / size;
     // Now the thing is if that's the last process, give some extra
-    if (rank == size - 1)
+    if (rank == (size - 1))
     {
         nRowsLocal += nRows % size;
     }
 
-    // Now the thing is in order to compare neighbors, we need two more rows basically those rows
+    // Now the thing is in order to compare neighbors, we need two more rows
     int nrowsLocalWithGhost = nRowsLocal + 2;
     int ncolswithGhost = nCols + 2;
 
@@ -53,6 +53,8 @@ int main(int argc, char *argv[])
     {
         for (int j = 1; j <= nCols; j++)
         {
+            // // currentGrid[i][j] = ;
+            // random number between 0 and 1 complelet random
             currentGrid[i][j] = rand() % 2;
         }
     }
