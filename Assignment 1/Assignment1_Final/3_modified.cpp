@@ -101,13 +101,6 @@ int main(int argc, char *argv[])
             }
         }
 
-        // handling the ghost cols send the first col to the last col and the last col to the first col just that we have done padding somehow
-        for (int i = 0; i < nrowsLocalWithGhost; i++)
-        {
-            currentGrid[i][0] = 0;
-            currentGrid[i][nCols + 1] = 0;
-        }
-
         if (rank != 0)
         {
             for (int row = 1; row <= nRowsLocal; row++)
@@ -147,12 +140,6 @@ int main(int argc, char *argv[])
             }
         }
 
-        for (int i = 0; i < nrowsLocalWithGhost; i++)
-        {
-            currentGrid[i][0] = 0;
-            currentGrid[i][ncolswithGhost - 1] = 0;
-        }
-
         for (int i = 1; i <= nRowsLocal; i++)
         {
             for (int j = 1; j <= nCols; j++)
@@ -166,6 +153,7 @@ int main(int argc, char *argv[])
                             alive++;
                     }
                 }
+
                 if (currentGrid[i][j] == ALIVE)
                 {
                     if (alive < 2)
@@ -202,4 +190,3 @@ int main(int argc, char *argv[])
 
     MPI_Finalize();
 }
-
