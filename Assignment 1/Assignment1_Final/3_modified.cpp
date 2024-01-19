@@ -17,7 +17,8 @@ int main(int argc, char *argv[])
     int iterations;
     if (rank == 0)
     {
-        cin>>nRows>>nCols>>iterations;
+        cin >> nRows >> nCols >> iterations;
+        iterations += 1;
         if (nRows < 1 || nCols < 1 || iterations < 1)
         {
             cout << "Invalid Input";
@@ -37,52 +38,31 @@ int main(int argc, char *argv[])
     MPI_Bcast(&nRows, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&nCols, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&iterations, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(newArray.data(),nRows*nCols,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(newArray.data(), nRows * nCols, MPI_INT, 0, MPI_COMM_WORLD);
 
     // Number of rows each process is going to take would be N/number of processes, given the last process some extra rows
-    int nRowsLocal = nRows / size; // 10
+    int nRowsLocal = nRows / size;
+
     // Now the thing is if that's the last process, give some extra
     if (rank == (size - 1))
     {
         nRowsLocal += nRows % size;
     }
-    // Now the thing is in order to compare neighbors, we need two more rows
+
     int nrowsLocalWithGhost = nRowsLocal + 2; // 12
     int ncolswithGhost = nCols + 2;           // 12
 
     // Now we need 2 arrays, one for the current and one for the future
-    vector<vector<int> > currentGrid(nrowsLocalWithGhost, vector<int>(ncolswithGhost, 0)); // 12X12
-    vector<vector<int> > futureGrid(nrowsLocalWithGhost, vector<int>(ncolswithGhost, 0));  // 12X12
-
-    // // Let's do it via random number
-    // int newArray[10][10] = {
-    //     {0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-    //     {1, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-    //     {0, 1, 1, 0, 0, 0, 0, 0, 0, 0},
-    //     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    //     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    //     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    //     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    //     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    //     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    //     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+    vector<vector<int>> currentGrid(nrowsLocalWithGhost, vector<int>(ncolswithGhost, 0)); // 12X12
+    vector<vector<int>> futureGrid(nrowsLocalWithGhost, vector<int>(ncolswithGhost, 0));  // 12X12
 
     for (int i = 1 + rank * (nRows / size); i <= nRowsLocal + rank * (nRows / size); i++)
     {
         for (int j = 1; j <= nCols; j++)
         {
-            currentGrid[i - rank * (nRows / size)][j] = newArray[(i - 1)*nCols +j - 1];
+            currentGrid[i - rank * (nRows / size)][j] = newArray[(i - 1) * nCols + j - 1];
         }
     }
-
-    // for(int i=0;i<nrowsLocalWithGhost;i++)
-    // {
-    //     for(int j=0;j<ncolswithGhost;j++)
-    //     {
-    //         cout<<currentGrid[i][j]<<" ";
-    //     }
-    //     cout<<endl;
-    // }
 
     // Now we would need two neighbors: one is the upper neighbor and the other is the lower neighbor
     int upperNeighbor = (rank == 0) ? size - 1 : rank - 1;
@@ -121,7 +101,7 @@ int main(int argc, char *argv[])
             }
         }
 
-        // handling the ghost cols send the first col to the last col and the last col to the first col
+        // handling the ghost cols send the first col to the last col and the last col to the first col just that we have done padding somehow
         for (int i = 0; i < nrowsLocalWithGhost; i++)
         {
             currentGrid[i][0] = 0;
@@ -166,10 +146,6 @@ int main(int argc, char *argv[])
                 }
             }
         }
-
-        // display current grid on the screen and update the grid, look through every cell and its 8 neighbors, for each count of live make it dead/alive accordingly
-
-        // there is no concept of ghost rows here and ghost coloumns make them zero as simple
 
         for (int i = 0; i < nrowsLocalWithGhost; i++)
         {
@@ -226,3 +202,4 @@ int main(int argc, char *argv[])
 
     MPI_Finalize();
 }
+
