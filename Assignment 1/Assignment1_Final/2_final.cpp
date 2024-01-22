@@ -2,6 +2,25 @@
 #include <mpi.h>
 using namespace std;
 
+void printOutput(vector<int> array,int N)
+{
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            if (array[i * N + j] == 1e9)
+            {
+                cout << "-1 ";
+            }
+            else
+            {
+                cout << array[i * N + j] << " ";
+            }
+        }
+        cout << "\n";
+    }
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -97,17 +116,7 @@ int main(int argc, char *argv[])
 
     if (rank == 0)
     {
-        for (int i = 0; i < N; i++)
-        {
-            for (int j = 0; j < N; j++)
-            {
-                if (newArray[i * N + j] == 1e9)
-                    cout << -1 << " ";
-                else
-                    cout << newArray[i * N + j] << " ";
-            }
-            cout << endl;
-        }
+        printOutput(newArray,N);
     }
 
     MPI_Finalize();
