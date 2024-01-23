@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 #include <mpi.h>
+#include <fstream>
 using namespace std;
 
 void printOutput(vector<long long int> array, long long int N)
@@ -34,6 +35,8 @@ int main(int argc, char *argv[])
     const int MAXLEN = 1001;
     vector<long long int> newArray(MAXLEN * MAXLEN);
     long long int N;
+    MPI_Barrier(MPI_COMM_WORLD);
+    double start_time = MPI_Wtime();
     if (rank == 0)
     {
         cin >> N;
@@ -117,9 +120,16 @@ int main(int argc, char *argv[])
         }
         MPI_Bcast(newArray.data(), N * N, MPI_LONG_LONG_INT, 0, MPI_COMM_WORLD);
     }
-
+    MPI_Barrier(MPI_COMM_WORLD);
+    double end_time = MPI_Wtime();
     if (rank == 0)
     {
+        ofstream outFile("performance_data2.txt", ios::app);
+
+        // Append performance information to the file
+        outFile << "Processes: " << size << ", ";
+        outFile << "Time taken: " << end_time - start_time << " seconds" << endl;
+
         printOutput(newArray, N);
     }
 
