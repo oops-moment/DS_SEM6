@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <fstream>
 #include "mpi.h"
 using namespace std;
 
@@ -10,11 +11,14 @@ int main(int argc, char *argv[])
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
+
     const int MAXLEN = 20;
     vector<int> newArray(MAXLEN * MAXLEN);
     int nRows;
     int nCols;
     int iterations;
+    MPI_Barrier(MPI_COMM_WORLD);
+    double start_time = MPI_Wtime();
     if (rank == 0)
     {
         cin >> nRows >> nCols >> iterations;
@@ -186,6 +190,17 @@ int main(int argc, char *argv[])
                 currentGrid[i][j] = futureGrid[i][j];
             }
         }
+    }
+
+    MPI_Barrier(MPI_COMM_WORLD);
+    double end_time = MPI_Wtime();
+
+    if (rank == 0)
+    {
+        ofstream outFile("performance_data3.txt", ios::app);
+        // Append performance information to the file
+        outFile << "Processes: " << size << ", ";
+        outFile << "Time taken: " << end_time - start_time << " seconds" << endl;
     }
 
     MPI_Finalize();

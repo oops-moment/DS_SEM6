@@ -1,0 +1,11 @@
+Processes: 2, Time taken: 8.27899 seconds
+Processes: 3, Time taken: 7.51013 seconds
+Processes: 4, Time taken: 7.40655 seconds
+Processes: 5, Time taken: 5.35085 seconds
+Processes: 6, Time taken: 4.70662 seconds
+Processes: 7, Time taken: 4.89846 seconds
+Processes: 8, Time taken: 4.35411 seconds
+Processes: 9, Time taken: 4.2443 seconds
+Processes: 10, Time taken: 4.77296 seconds
+Processes: 11, Time taken: 3.62366 seconds
+Processes: 12, Time taken: 3.56505 seconds
