@@ -1,0 +1,9 @@
+Processes: 2, Total solutions: 724, Time taken: 2.30176 seconds
+Processes: 3, Total solutions: 724, Time taken: 1.77481 seconds
+Processes: 4, Total solutions: 724, Time taken: 1.54448 seconds
+Processes: 5, Total solutions: 724, Time taken: 1.34707 seconds
+Processes: 6, Total solutions: 724, Time taken: 1.20392 seconds
+Processes: 7, Total solutions: 724, Time taken: 1.11864 seconds
+Processes: 8, Total solutions: 724, Time taken: 1.05369 seconds
+Processes: 9, Total solutions: 724, Time taken: 0.980603 seconds
+Processes: 10, Total solutions: 724, Time taken: 0.910896 seconds

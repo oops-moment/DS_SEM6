@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #include <cstdlib>
 #include <mpi.h>
+#include <fstream>
 
 using namespace std;
 bool checkDiagonal(vector<int> perm, long long n)
@@ -80,8 +81,17 @@ int main(int argc, char *argv[])
     double end_time = MPI_Wtime();
     if (rank == 0)
     {
+        // Open a file for appending
+        ofstream outFile("performance_data1.txt", ios::app);
+
+        // Append performance information to the file
+        outFile << "Processes: " << size << ", ";
+        outFile << "Total solutions: " << total << ", ";
+        outFile << "Time taken: " << end_time - start_time << " seconds" << endl;
+
+        // Close the file
+        outFile.close();
         cout << "Total solutions: " << total << endl;
-        cout << "Time taken: " << end_time - start_time << endl;
     }
     MPI_Finalize();
     return 0;
