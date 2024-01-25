@@ -45,7 +45,26 @@ The MPI implementation of the N-Queens problem demonstrates effective parallel s
   ![!VISUALIZATION](image-2.png)
   ![VISUALIZATION](image-3.png)
 
-Question 3:
-time complexity : o(nmt/p)
-message complexity:o(n2)
-space complexity : o(n2)
+# Convoy Game of Life
+
+## Total Time Complexity:
+- The time complexity of the Convoy Game of Life simulation depends on the number of iterations (`iterations`), the size of the grid (`nRows x nCols`), and the number of processes (`size`) in the MPI environment.
+- Let `N` be the total number of cells in the grid (`N = nRows x nCols`). 
+- For each iteration, each process updates its local portion of the grid. This update involves examining each cell's neighborhood, which has a constant size (8 neighbors). Thus, the time complexity per iteration is O(N2/P).
+- The total time complexity of the simulation over `iterations` iterations is O(iterations x N2/P).
+
+## Total Message Complexity:
+- In the MPI implementation, communication occurs mainly during the exchange of rows between neighboring processes.
+- Each process sends and receives two rows of the grid (top and bottom) to and from its neighboring processes.
+- The total message complexity over `iterations` iterations remains O(iterations*N).
+
+## Space Requirements:
+- The space complexity of the solution depends on the size of the grid and the number of processes.
+- Each process maintains two grids: `currentGrid` and `futureGrid`, each with dimensions `(nRowsLocal + 2) x (nCols + 2)`. Additionally, each grid requires space for ghost cells to facilitate inter-process communication.
+- The total space complexity for all processes combined is O(N2).
+
+## Performance Scaling (1 to 12 processes):
+
+- The MPI implementation of the Convoy Game of Life simulation demonstrates effective parallel scalability. There is a noticeable speedup when transitioning from one to two processes. However, diminishing returns set in as the process count increases, indicating an optimal range of parallelization.Diminishing returns are attributed to increasing communication overhead between processes. 80 80 80
+  ![!VISUALIZATION](image-4.png)
+  ![VISUALIZATION](image-5.png)

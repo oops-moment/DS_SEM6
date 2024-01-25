@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    const int MAXLEN = 101;
+    const int MAXLEN = 1001;
     vector<int> newArray(MAXLEN * MAXLEN);
     int nRows;
     int nCols;
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     {
         cin >> nRows >> nCols >> iterations;
         iterations += 1;
-        if (nRows < 1 || nCols < 1 || iterations < 1)
+        if (nRows < 2 || nCols < 2 || iterations < 1)
         {
             cout << "Invalid Input";
             MPI_Finalize();
@@ -45,11 +45,7 @@ int main(int argc, char *argv[])
     MPI_Bcast(&iterations, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(newArray.data(), nRows * nCols, MPI_INT, 0, MPI_COMM_WORLD);
 
-    // Number of rows each process is going to take would be N/number of processes, given the last process some extra rows
-
     int nRowsLocal = nRows / size;
-
-    // Now the thing is if that's the last process, give some extra
     if (rank == (size - 1))
     {
         nRowsLocal += nRows % size;
