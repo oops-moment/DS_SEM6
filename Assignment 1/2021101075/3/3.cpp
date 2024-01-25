@@ -145,9 +145,6 @@ int main(int argc, char *argv[])
     int upperNeighbor = (rank == 0) ? size - 1 : rank - 1;
     int lowerNeighbor = (rank == size - 1) ? 0 : rank + 1;
 
-    const int ALIVE = 1;
-    const int DEAD = 0;
-
     // NITERATION LOOP
     for (int iter = 0; iter < iterations; iter++)
     {
