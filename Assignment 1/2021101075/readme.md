@@ -22,13 +22,28 @@ The MPI implementation of the N-Queens problem demonstrates effective parallel s
 ![Visualization](image-1.png)
 
 
+# MPI Parallel Implementation of Floyd-Warshall Algorithm
 
+## 1. Total Time Complexity
+   - The Floyd-Warshall algorithm has a time complexity of O(N^3), where N is the number of vertices (nodes) in the graph.
+   - In this MPI implementation, the algorithm is parallelized by distributing rows of the adjacency matrix across different processes.
+   - The time complexity per process would be O(N^3 / P), where P is the number of processes.
+   - The sequential part of the algorithm (when size is 1) is still O(N^3).
 
-Question 2 :
-time complexity : O(N3/P)
-broadcasr message : O(N2)
-spcace complexituy :O(n2)
-<!-- long long krke graoh bananlena -->
+## 2. Total Message Complexity
+   - The primary communication operations are MPI_Bcast and MPI_Send/MPI_Recv.
+   - MPI_Bcast is used to broadcast the matrix dimensions and data to all processes, which has a message complexity of O(N*2).
+   - Message complexity is influenced by the number of processes and the data exchanged. In this case, it's proportional to the size of the adjacency matrix.
+
+## 3. Space Requirements
+   - The space complexity is determined by the memory used by each process.
+   - The primary data structures are vectors ('adjacencyMatrix', 'localMatrix', 'kth') and scalar variables.
+   - The space complexity per process is O(N^2), dominated by the adjacency matrix.
+
+## 4. Performance Scaling (1 to 12 processes)
+- The MPI parallel Floyd-Warshall algorithm initially demonstrates improved performance as the number of processes increases for an input size larger than 100 vertices. However, beyond a certain point, communication overhead becomes a limiting factor, leading to fluctuations in execution time. 
+  ![!VISUALIZATION](image-2.png)
+  ![VISUALIZATION](image-3.png)
 
 Question 3:
 time complexity : o(nmt/p)
