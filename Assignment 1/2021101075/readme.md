@@ -1,6 +1,6 @@
 #                                                           ASSIGNMENT 1 
 
-## Question 1
+##  N-Queens Problem
 
 ###  Total Time Complexity
 

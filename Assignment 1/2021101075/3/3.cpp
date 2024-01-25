@@ -4,6 +4,81 @@
 #include "mpi.h"
 using namespace std;
 
+void WriteToFile(int size, double time)
+{
+    ofstream myfile;
+    myfile.open("output.txt", ios::app);
+    myfile << size << " " << time << "\n";
+    myfile.close();
+}
+
+void printMatrix(vector<vector<int>> &currentGrid, int nRowsLocal, int nCols, int iter)
+{
+    cout << "Iteration " << iter << "\n";
+    for (int i = 1; i <= nRowsLocal; i++)
+    {
+        for (int j = 1; j <= nCols; j++)
+        {
+            cout << currentGrid[i][j] << " ";
+        }
+        cout << "\n";
+    }
+}
+void performIteration(vector<vector<int>> &currentGrid, vector<vector<int>> &futureGrid, int nRowsLocal, int nCols)
+{
+    const int ALIVE = 1;
+    const int DEAD = 0;
+
+    for (int i = 1; i <= nRowsLocal; i++)
+    {
+        for (int j = 1; j <= nCols; j++)
+        {
+            int alive = 0;
+            for (int ii = i - 1; ii <= i + 1; ii++)
+            {
+                for (int jj = j - 1; jj <= j + 1; jj++)
+                {
+                    if ((ii != i || jj != j) && currentGrid[ii][jj] == ALIVE)
+                        alive++;
+                }
+            }
+
+            if (currentGrid[i][j] == ALIVE)
+            {
+                if (alive < 2)
+                {
+                    futureGrid[i][j] = DEAD;
+                }
+                else if (alive == 2 || alive == 3)
+                {
+                    futureGrid[i][j] = ALIVE;
+                }
+                else if (alive > 3)
+                {
+                    futureGrid[i][j] = DEAD;
+                }
+            }
+            else
+            {
+                if (alive == 3)
+                {
+                    futureGrid[i][j] = ALIVE;
+                }
+            }
+        }
+    }
+}
+
+void updateGrid(vector<vector<int>> &currentGrid, vector<vector<int>> &futureGrid, int nRowsLocal, int nCols)
+{
+    for (int i = 1; i <= nRowsLocal; i++)
+    {
+        for (int j = 1; j <= nCols; j++)
+        {
+            currentGrid[i][j] = futureGrid[i][j];
+        }
+    }
+}
 int main(int argc, char *argv[])
 {
     MPI_Status status;
@@ -112,15 +187,8 @@ int main(int argc, char *argv[])
         }
         if (rank == 0)
         {
-            cout << "Iteration " << iter << ":\n";
-            for (int row = 1; row <= nRowsLocal; row++)
-            {
-                for (int col = 1; col <= nCols; col++)
-                {
-                    cout << currentGrid[row][col] << " ";
-                }
-                cout << endl;
-            }
+
+            printMatrix(currentGrid, nRowsLocal, nCols, iter);
 
             for (int srcrank = 1; srcrank < size; srcrank++)
             {
@@ -141,53 +209,8 @@ int main(int argc, char *argv[])
                 }
             }
         }
-
-        for (int i = 1; i <= nRowsLocal; i++)
-        {
-            for (int j = 1; j <= nCols; j++)
-            {
-                int alive = 0;
-                for (int ii = i - 1; ii <= i + 1; ii++)
-                {
-                    for (int jj = j - 1; jj <= j + 1; jj++)
-                    {
-                        if ((ii != i || jj != j) && currentGrid[ii][jj] == ALIVE)
-                            alive++;
-                    }
-                }
-
-                if (currentGrid[i][j] == ALIVE)
-                {
-                    if (alive < 2)
-                    {
-                        futureGrid[i][j] = DEAD;
-                    }
-                    else if (alive == 2 || alive == 3)
-                    {
-                        futureGrid[i][j] = ALIVE;
-                    }
-                    else if (alive > 3)
-                    {
-                        futureGrid[i][j] = DEAD;
-                    }
-                }
-                else
-                {
-                    if (alive == 3)
-                    {
-                        futureGrid[i][j] = ALIVE;
-                    }
-                }
-            }
-        }
-
-        for (int i = 1; i <= nRowsLocal; i++)
-        {
-            for (int j = 1; j <= nCols; j++)
-            {
-                currentGrid[i][j] = futureGrid[i][j];
-            }
-        }
+        performIteration(currentGrid, futureGrid, nRowsLocal, nCols);
+        updateGrid(currentGrid, futureGrid, nRowsLocal, nCols);
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
@@ -195,10 +218,7 @@ int main(int argc, char *argv[])
 
     if (rank == 0)
     {
-        ofstream outFile("performance_data3.txt", ios::app);
-        // Append performance information to the file
-        outFile << "Processes: " << size << ", ";
-        outFile << "Time taken: " << end_time - start_time << " seconds" << endl;
+        WriteToFile(size, end_time - start_time);
         cout << "finish"
              << "\n";
     }
