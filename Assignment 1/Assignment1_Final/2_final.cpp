@@ -35,8 +35,7 @@ int main(int argc, char *argv[])
     const int MAXLEN = 1001;
     vector<long long int> newArray(MAXLEN * MAXLEN);
     long long int N;
-    MPI_Barrier(MPI_COMM_WORLD);
-    double start_time = MPI_Wtime();
+
     if (rank == 0)
     {
         cin >> N;
@@ -53,6 +52,9 @@ int main(int argc, char *argv[])
 
     MPI_Bcast(&N, 1, MPI_LONG_LONG_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(newArray.data(), N * N, MPI_LONG_LONG_INT, 0, MPI_COMM_WORLD);
+
+    MPI_Barrier(MPI_COMM_WORLD);
+    double start_time = MPI_Wtime();
     if (size > N + 1)
     {
         size = N;

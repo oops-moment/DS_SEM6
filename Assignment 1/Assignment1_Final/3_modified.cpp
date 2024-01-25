@@ -12,13 +12,12 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    const int MAXLEN = 20;
+    const int MAXLEN = 101;
     vector<int> newArray(MAXLEN * MAXLEN);
     int nRows;
     int nCols;
     int iterations;
-    MPI_Barrier(MPI_COMM_WORLD);
-    double start_time = MPI_Wtime();
+
     if (rank == 0)
     {
         cin >> nRows >> nCols >> iterations;
@@ -37,6 +36,8 @@ int main(int argc, char *argv[])
             }
         }
     }
+    MPI_Barrier(MPI_COMM_WORLD);
+    double start_time = MPI_Wtime();
 
     // Broadcast the values to all the processes
     MPI_Bcast(&nRows, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -45,6 +46,7 @@ int main(int argc, char *argv[])
     MPI_Bcast(newArray.data(), nRows * nCols, MPI_INT, 0, MPI_COMM_WORLD);
 
     // Number of rows each process is going to take would be N/number of processes, given the last process some extra rows
+
     int nRowsLocal = nRows / size;
 
     // Now the thing is if that's the last process, give some extra
@@ -201,6 +203,8 @@ int main(int argc, char *argv[])
         // Append performance information to the file
         outFile << "Processes: " << size << ", ";
         outFile << "Time taken: " << end_time - start_time << " seconds" << endl;
+        cout << "finish"
+             << "\n";
     }
 
     MPI_Finalize();
