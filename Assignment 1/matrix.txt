@@ -1,5 +1,0 @@
-Number of Processes: 1	Time taken: 0.0236754 seconds
-Number of Processes: 2	Time taken: 0.014453 seconds
-Number of Processes: 4	Time taken: 0.0124854 seconds
-Number of Processes: 7	Time taken: 0.0088418 seconds
-Number of Processes: 8	Time taken: 0.0085037 seconds

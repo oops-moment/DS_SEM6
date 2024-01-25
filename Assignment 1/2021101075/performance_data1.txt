@@ -1,0 +1,11 @@
+Processes: 1, Total solutions: 2680, Time taken: 36.305 seconds
+Processes: 2, Total solutions: 2680, Time taken: 22.5165 seconds
+Processes: 3, Total solutions: 2680, Time taken: 17.3823 seconds
+Processes: 4, Total solutions: 2680, Time taken: 11.4375 seconds
+Processes: 5, Total solutions: 2680, Time taken: 10.0777 seconds
+Processes: 6, Total solutions: 2680, Time taken: 11.039 seconds
+Processes: 7, Total solutions: 2680, Time taken: 9.519 seconds
+Processes: 8, Total solutions: 2680, Time taken: 8.03884 seconds
+Processes: 9, Total solutions: 2680, Time taken: 8.00699 seconds
+Processes: 10, Total solutions: 2680, Time taken: 7.58857 seconds
+Processes: 11, Total solutions: 2680, Time taken: 6.80679 seconds
