@@ -1,3 +1,0 @@
-Processes: 4, Time taken: 0.0015301 seconds
-Processes: 4, Time taken: 0.0004944 seconds
-Processes: 4, Time taken: 0.0037365 seconds

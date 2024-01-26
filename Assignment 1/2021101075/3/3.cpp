@@ -114,6 +114,42 @@ int main(int argc, char *argv[])
     MPI_Barrier(MPI_COMM_WORLD);
     double start_time = MPI_Wtime();
 
+    if (size == 1)
+    {
+        iterations -= 1;
+        vector<vector<int>> currentGrid(nRows + 2, vector<int>(nCols + 2, 0));
+        vector<vector<int>> futureGrid(nRows + 2, vector<int>(nCols + 2, 0));
+
+        for (int i = 1; i <= nRows; i++)
+        {
+            for (int j = 1; j <= nCols; j++)
+            {
+                currentGrid[i][j] = newArray[(i - 1) * nCols + j - 1];
+            }
+        }
+
+        for (int iter = 0; iter < iterations; iter++)
+        {
+            performIteration(currentGrid, futureGrid, nRows, nCols);
+            updateGrid(currentGrid, futureGrid, nRows, nCols);
+            printMatrix(currentGrid, nRows, nCols, iter);
+        }
+
+        double end_time = MPI_Wtime();
+        double time_taken = end_time - start_time;
+
+        // Only rank 0 writes to the file
+        if (rank == 0)
+        {
+            WriteToFile(size, time_taken);
+            cout << "finish"
+                 << "\n";
+        }
+
+        MPI_Finalize();
+        return 0;
+    }
+
     // Broadcast the values to all the processes
     MPI_Bcast(&nRows, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&nCols, 1, MPI_INT, 0, MPI_COMM_WORLD);
