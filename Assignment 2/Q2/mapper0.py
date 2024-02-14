@@ -11,4 +11,7 @@ for line in sys.stdin:
     print(f"{x}\t{y}")
 
     # Output (y, x) pair
+
     print(f"{y}\t{x}")
+
+    
