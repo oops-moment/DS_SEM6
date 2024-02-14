@@ -14,7 +14,6 @@ void WriteToFile(int size, double time)
 
 void printMatrix(vector<int> &currentGrid, int nRowsLocal, int nCols, int iter)
 {
-    cout << "Iteration " << iter << "\n";
     for (int i = 1; i <= nRowsLocal; i++)
     {
         for (int j = 1; j <= nCols; j++)
@@ -132,7 +131,10 @@ int main(int argc, char *argv[])
         {
             performIteration(currentGrid1D, futureGrid1D, nRows, nCols);
             updateGrid(currentGrid1D, futureGrid1D, nRows, nCols);
-            printMatrix(currentGrid1D, nRows, nCols, iter);
+            if (iter == (iterations - 1))
+            {
+                printMatrix(currentGrid1D, nRows, nCols, iter);
+            }
         }
 
         double end_time = MPI_Wtime();
@@ -141,9 +143,9 @@ int main(int argc, char *argv[])
         // Only rank 0 writes to the file
         if (rank == 0)
         {
-            WriteToFile(size, time_taken);
-            cout << "finish"
-                 << "\n";
+            // WriteToFile(size, time_taken);
+            // cout << "finish"
+            // << "\n";
         }
 
         MPI_Finalize();
@@ -222,8 +224,10 @@ int main(int argc, char *argv[])
         }
         if (rank == 0)
         {
-
-            printMatrix(currentGrid1D, nRowsLocal, nCols, iter);
+            if (iter == (iterations - 1))
+            {
+                printMatrix(currentGrid1D, nRowsLocal, nCols, iter);
+            }
             for (int srcrank = 1; srcrank < size; srcrank++)
             {
                 int torecv = nRows / size;
@@ -235,11 +239,14 @@ int main(int argc, char *argv[])
                 for (int i = 0; i < torecv; i++)
                 {
                     MPI_Recv(buffer.data(), nCols, MPI_INT, srcrank, 0, MPI_COMM_WORLD, &status);
-                    for (auto it : buffer)
+                    if (iter == (iterations - 1))
                     {
-                        cout << it << " ";
+                        for (auto it : buffer)
+                        {
+                            cout << it << " ";
+                        }
+                        cout << "\n";
                     }
-                    cout << "\n";
                 }
             }
         }
@@ -252,9 +259,7 @@ int main(int argc, char *argv[])
 
     if (rank == 0)
     {
-        WriteToFile(size, end_time - start_time);
-        cout << "finish"
-             << "\n";
+        // WriteToFile(size, end_time - start_time);
     }
 
     MPI_Finalize();

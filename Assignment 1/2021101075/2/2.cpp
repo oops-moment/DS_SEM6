@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
         MPI_Barrier(MPI_COMM_WORLD);
         double end_time = MPI_Wtime();
         printMatrix(adjacencyMatrix, N);
-        writeToFile(size, end_time - start_time);
+        // writeToFile(size, end_time - start_time);
         MPI_Finalize();
         return 0;
     }
@@ -107,14 +107,14 @@ int main(int argc, char *argv[])
         size = N;
     }
     to_use = size - 1;
-    long long int nRowsLocal = N / to_use;
+    long long int tempRows = N / to_use;
     if (rank == (size - 1))
     {
-        nRowsLocal += N % to_use;
+        tempRows += N % to_use;
     }
     long long int always = N / to_use;
 
-    vector<long long int> localMatrix((nRowsLocal)*N, 0); // Flatten the 2D vector
+    vector<long long int> localMatrix((tempRows)*N, 0); // Flatten the 2D vector
     vector<long long int> kth(2 * N, 0);
 
     for (long long int k = 0; k < N; k++)
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
         if (rank != 0)
         {
             // Copy the relevant rows to localMatrix for computation
-            for (long long int i = (rank - 1) * always; i < nRowsLocal + (rank - 1) * always; i++)
+            for (long long int i = (rank - 1) * always; i < tempRows + (rank - 1) * always; i++)
             {
                 for (long long int j = 0; j < N; j++)
                 {
@@ -137,10 +137,9 @@ int main(int argc, char *argv[])
                 kth[j] = adjacencyMatrix[j * N + k];
                 kth[N + j] = adjacencyMatrix[k * N + j];
             }
-            // first N is kth coloumn and next N is kth row
 
             // Perform Floyd-Warshall algorithm locally
-            for (long long int i = 0; i < nRowsLocal; i++)
+            for (long long int i = 0; i < tempRows; i++)
             {
                 for (long long int j = 0; j < N; j++)
                 {
@@ -159,7 +158,7 @@ int main(int argc, char *argv[])
             }
 
             // Send the result back to rank 0
-            MPI_Send(localMatrix.data(), nRowsLocal * N, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD);
+            MPI_Send(localMatrix.data(), tempRows * N, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD);
         }
 
         if (rank == 0)
@@ -188,7 +187,7 @@ int main(int argc, char *argv[])
     if (rank == 0)
     {
 
-        writeToFile(size, end_time - start_time);
+        // writeToFile(size, end_time - start_time);
         printMatrix(adjacencyMatrix, N);
     }
 

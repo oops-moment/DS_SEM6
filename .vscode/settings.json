@@ -4,6 +4,8 @@
         "iostream": "cpp",
         "type_traits": "cpp",
         "iosfwd": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "unordered_map": "cpp",
+        "files.eol": "\n"
     }
 }

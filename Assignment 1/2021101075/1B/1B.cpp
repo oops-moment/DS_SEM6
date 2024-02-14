@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 
     if (rank == 0)
     {
-        cout << "Enter the number of queens: ";
+        // cout << "Enter the number of queens: ";
         cin >> n;
     }
 
@@ -108,8 +108,9 @@ int main(int argc, char *argv[])
 
     if (rank == 0)
     {
-        writePerformanceToFile(end_time - start_time, total, size);
-        cout << "Total solutions: " << total << endl;
+        // writePerformanceToFile(end_time - start_time, total, size);
+        // cout << "Total solutions: " << total << endl;
+        cout << total << "\n";
     }
 
     MPI_Finalize();
