@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*-coding:utf-8 -*
+# basically this reducer get multiple inputs from the mapper and then it updates the distance and the path for each node
+# 2 200000 3:1 4:1 5:1 and 2 1 neighbour path then it takes 1 since that is minimum
 
 import sys
 
@@ -31,7 +33,8 @@ for line in sys.stdin:
     else:
 
         if current_node:
-            print(f"{current_node}\t{current_dist}\t{current_neighbours}")
+            print(
+                f"{current_node}\t{current_dist}\t{current_neighbours}")
 
         current_node = node
         current_dist = distance

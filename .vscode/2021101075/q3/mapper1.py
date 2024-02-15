@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 # -*-coding:utf-8 -*
+# this mapper basically what it does is send the node along with its updated distance , so that the reducer can update the distance for that node
+# 2 200000 3:1 4:1 5:1
+# 2 1 neighbour path
+# this goes to reducer and then 1 is decided as the distance and the path is updated
 
 import sys
 
