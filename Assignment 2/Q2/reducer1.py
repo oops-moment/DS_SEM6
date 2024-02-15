@@ -4,30 +4,29 @@
 import sys
 
 current_key = None
-common_friends = None
+values = []
 
 def format_output(key):
     return tuple(map(int, key.split('_')))
 
 for line in sys.stdin:
     line = line.strip()
-    key, friends_str = line.split('\t')
-    friends = set(map(int, friends_str.split()))
+    key, value = line.split('\t')
 
     if current_key is None:
         current_key = key
-        common_friends = friends
+        values.append(int(value))
     elif key == current_key:
-        common_friends = common_friends.intersection(friends)
+        values.append(int(value))
     else:
-        if(len(common_friends)>0):
-            formatted_key = format_output(current_key)
-            print(f"{formatted_key[0]} {formatted_key[1]}\t{' '.join(map(str, common_friends))}")
+        formatted_key = format_output(current_key)
+        sorted_values = sorted(values)
+        print(f"{formatted_key[0]}_{formatted_key[1]}\t{' '.join(map(str, sorted_values))}")
         current_key = key
-        common_friends = friends
+        values = [int(value)]
 
 # Output the final result for the last key
 if current_key is not None:
-    if(len(common_friends)>0):
-            formatted_key = format_output(current_key)
-            print(f"{formatted_key[0]} {formatted_key[1]}\t{' '.join(map(str, common_friends))}")
+    formatted_key = format_output(current_key)
+    sorted_values = sorted(values)
+    print(f"{formatted_key[0]}_{formatted_key[1]}\t{' '.join(map(str, sorted_values))}")

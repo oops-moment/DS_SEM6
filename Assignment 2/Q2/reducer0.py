@@ -23,3 +23,5 @@ for line in sys.stdin:
 # Output the last node and its friends
 if current_node is not None:
     print(f"{current_node}\t{' '.join(map(str, friends_list))}")
+
+
