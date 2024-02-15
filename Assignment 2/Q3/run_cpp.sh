@@ -2,7 +2,7 @@
 
 LOCAL_INPUT=input.txt
 HDFS_INPUT=/user/root/input.txt
-HDFS_OUTPUT=/user/root/output
+BASE_OUTPUT_DIR=/user/root/output
 
 # Check if the local input file exists
 if [ -e $LOCAL_INPUT ]; then
@@ -17,7 +17,7 @@ if [ -e $LOCAL_INPUT ]; then
     mapred streaming \
         -files $MAPPER_SCRIPT0,$REDUCER_SCRIPT0 \
         -input $HDFS_INPUT \
-        -output $HDFS_OUTPUT \
+        -output $BASE_OUTPUT_DIR/output0 \
         -mapper $MAPPER_SCRIPT0 \
         -reducer $REDUCER_SCRIPT0 \
 
@@ -25,29 +25,27 @@ if [ -e $LOCAL_INPUT ]; then
     MAPPER_SCRIPT1=mapper1.py
     REDUCER_SCRIPT1=reducer1.py
 
-    # Run the second MapReduce job using mapred streaming
-    mapred streaming \
-        -files $MAPPER_SCRIPT1,$REDUCER_SCRIPT1 \
-        -input $HDFS_OUTPUT/part-* \
-        -output $HDFS_OUTPUT/result \
-        -mapper $MAPPER_SCRIPT1 \
-        -reducer $REDUCER_SCRIPT1 \
+    # Get the number of iterations based on the number of lines in input.txt
+    NUM_ITERATIONS=$(hdfs dfs -cat $HDFS_INPUT | wc -l)
     
-    # Run the second MapReduce job using mapred streaming
-    mapred streaming \
-        -files $MAPPER_SCRIPT1,$REDUCER_SCRIPT1 \
-        -input $HDFS_OUTPUT/result/part-* \
-        -output $HDFS_OUTPUT/result1 \
-        -mapper $MAPPER_SCRIPT1 \
-        -reducer $REDUCER_SCRIPT1 \
+    echo "Number of iterations: $NUM_ITERATIONS"
+    for ((i=1; i<=$NUM_ITERATIONS; i++)); do
+        # Run the second MapReduce job using mapred streaming
+        mapred streaming \
+            -files $MAPPER_SCRIPT1,$REDUCER_SCRIPT1 \
+            -input $BASE_OUTPUT_DIR/output$((i-1))/part-* \
+            -output $BASE_OUTPUT_DIR/output$i \
+            -mapper $MAPPER_SCRIPT1 \
+            -reducer $REDUCER_SCRIPT1
+        
+    done
 
-    # Display the contents of the output files
-    hdfs dfs -cat $HDFS_OUTPUT/result1/part-*
-    
+    # Display the final contents of the output files
+    hdfs dfs -cat $BASE_OUTPUT_DIR/output$NUM_ITERATIONS/part-*
 
     # Delete the input and output files
     hdfs dfs -rm $HDFS_INPUT
-    hdfs dfs -rm -r $HDFS_OUTPUT
+    hdfs dfs -rm -r $BASE_OUTPUT_DIR
 
     echo "Hadoop job completed successfully!"
 else
