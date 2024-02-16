@@ -6,7 +6,9 @@ BASE_OUTPUT_DIR=/user/root/output
 
 # Check if the local input file exists
 if [ -e $LOCAL_INPUT ]; then
+
     # File exists, upload to HDFS
+    hdfs dfs -mkdir -p /user/root
     hdfs dfs -put $LOCAL_INPUT $HDFS_INPUT
 
     # Specify the mapper and reducer scripts for the first stage
@@ -28,6 +30,7 @@ if [ -e $LOCAL_INPUT ]; then
 
     # Get the number of iterations based on the number of lines in input.txt
     NUM_ITERATIONS=$(hdfs dfs -cat $HDFS_INPUT | wc -l)
+    # NUM_ITERATIONS= 2
     
     echo "Number of iterations: $NUM_ITERATIONS"
     for ((i=1; i<=$NUM_ITERATIONS; i++)); do
