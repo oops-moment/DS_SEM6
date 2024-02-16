@@ -7,6 +7,7 @@ HDFS_OUTPUT=/user/root/output
 # Check if the local input file exists
 if [ -e $LOCAL_INPUT ]; then
     # File exists, upload to HDFS
+    hdfs dfs -mkdir -p /user/root
     hdfs dfs -put $LOCAL_INPUT $HDFS_INPUT
 
     # Specify the mapper and reducer scripts for the first stage
