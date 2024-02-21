@@ -9,5 +9,6 @@ for line in sys.stdin:
 
     # Extract relevant information
     current_node, current_dist, current_neighbours = fields[0], fields[1], fields[2:]
+    current_dist = int(current_dist)
     if (current_dist <= 100):
         print(f"{current_node}\t{current_dist}")
