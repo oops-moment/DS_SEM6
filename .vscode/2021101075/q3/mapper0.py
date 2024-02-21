@@ -6,4 +6,5 @@ import sys
 for line in sys.stdin:
     line = line.strip()
     node, *neighbors = line.split()
-    print(f"{node}\t{','.join(neighbors)}")
+    if (neighbors):
+        print(f"{node}\t{','.join(neighbors)}")
