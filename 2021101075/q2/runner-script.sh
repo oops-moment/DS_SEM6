@@ -26,26 +26,26 @@ create_hdfs_directory() {
 create_hdfs_directory "$HDFS_INPUT_DIR"
 
 # Upload local input files to HDFS input directory
-hdfs dfs -put "$LOCAL_INPUT_DIR" "$HDFS_INPUT_DIR/"
-
+hdfs dfs -put "$LOCAL_INPUT_DIR"/* "$HDFS_INPUT_DIR/"
 
 # Specify the mapper and reducer scripts for the first stage
 MAPPER_SCRIPT0=mapper0.py
 REDUCER_SCRIPT0=reducer0.py
+
 # Run the first MapReduce job using mapred streaming
 mapred streaming \
     -files "$MAPPER_SCRIPT0","$REDUCER_SCRIPT0" \
-    -input "$HDFS_INPUT_DIR/input.txt" \
+    -input "$HDFS_INPUT_DIR/*" \
     -output "$HDFS_TEMP_DIR" \
     -mapper "$MAPPER_SCRIPT0" \
     -reducer "$REDUCER_SCRIPT0" \
     -numReduceTasks 3
 
-# Run the second MapReduce job using mapred streaming
-
+# Specify the mapper and reducer scripts for the second stage
 MAPPER_SCRIPT1=mapper1.py
 REDUCER_SCRIPT1=reducer1.py
 
+# Run the second MapReduce job using mapred streaming
 mapred streaming \
     -files "$MAPPER_SCRIPT1","$REDUCER_SCRIPT1" \
     -input "$HDFS_TEMP_DIR/part-*" \
@@ -54,13 +54,12 @@ mapred streaming \
     -reducer "$REDUCER_SCRIPT1" \
     -numReduceTasks 3
 
-
 # Delete the input and output files
 hdfs dfs -rm -r "$HDFS_INPUT_DIR"
 # hdfs dfs -rm -r "$HDFS_OUTPUT_DIR"
 hdfs dfs -rm -r "$HDFS_TEMP_DIR"
 
-# display the output
+# Display the output
 hdfs dfs -cat "$HDFS_OUTPUT_DIR/*" | sort
 
 echo "Hadoop job completed successfully!"

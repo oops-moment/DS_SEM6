@@ -26,7 +26,7 @@ create_hdfs_directory() {
 create_hdfs_directory "$HDFS_INPUT_DIR"
 
 # Upload local input files to HDFS input directory
-hdfs dfs -put "$LOCAL_INPUT_DIR" "$HDFS_INPUT_DIR/"
+hdfs dfs -put "$LOCAL_INPUT_DIR"/* "$HDFS_INPUT_DIR/"
 
 # Specify the mapper and reducer scripts for the first stage
 MAPPER_SCRIPT0=mapper0.py
