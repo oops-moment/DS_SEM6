@@ -22,7 +22,7 @@ if [ -e $LOCAL_INPUT ]; then
         -output $BASE_OUTPUT_DIR/output0 \
         -mapper $MAPPER_SCRIPT0 \
         -reducer $REDUCER_SCRIPT0 \
-        -numReduceTasks 2
+        -numReduceTasks 3
 
     # Specify the mapper and reducer scripts for the second stage
     MAPPER_SCRIPT1=mapper1.py
@@ -41,7 +41,7 @@ if [ -e $LOCAL_INPUT ]; then
             -output $BASE_OUTPUT_DIR/output$i \
             -mapper $MAPPER_SCRIPT1 \
             -reducer $REDUCER_SCRIPT1 \
-            -numReduceTasks 2
+            -numReduceTasks 3
         
     done
 
@@ -56,7 +56,7 @@ if [ -e $LOCAL_INPUT ]; then
         -output $BASE_OUTPUT_DIR/final_output \
         -mapper $MAPPER_SCRIPT2 \
         -reducer $REDUCER_SCRIPT2 \
-        -numReduceTasks 1
+        -numReduceTasks 3
 
     # Display the final contents of the output files
     hdfs dfs -cat $BASE_OUTPUT_DIR/final_output/part-00000
