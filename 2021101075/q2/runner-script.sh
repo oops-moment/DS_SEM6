@@ -62,4 +62,3 @@ hdfs dfs -rm -r "$HDFS_TEMP_DIR"
 # Display the output
 hdfs dfs -cat "$HDFS_OUTPUT_DIR/*" | sort
 
-echo "Hadoop job completed successfully!"

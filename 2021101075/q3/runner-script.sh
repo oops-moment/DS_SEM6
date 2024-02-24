@@ -35,22 +35,18 @@ REDUCER_SCRIPT0=reducer0.py
 # Run the first MapReduce job using mapred streaming
 mapred streaming \
     -files "$MAPPER_SCRIPT0","$REDUCER_SCRIPT0" \
-    -input "$HDFS_INPUT_DIR/input.txt" \
+    -input "$HDFS_INPUT_DIR/*" \
     -output "$HDFS_TEMP_DIR/output0" \
     -mapper "$MAPPER_SCRIPT0" \
     -reducer "$REDUCER_SCRIPT0" \
-    -numReduceTasks 3
+    -numReduceTasks 10
 
 # Specify the mapper and reducer scripts for the second stage
 MAPPER_SCRIPT1=mapper1.py
 REDUCER_SCRIPT1=reducer1.py
 
 
-NUM_ITERATIONS=$(hdfs dfs -cat "$HDFS_INPUT_DIR/input.txt" | wc -l)
-# take minimum of 10 and number of lines in input.txt
-NUM_ITERATIONS=$(($NUM_ITERATIONS < 10 ? $NUM_ITERATIONS : 10))
-
-echo "Number of iterations: $NUM_ITERATIONS"
+NUM_ITERATIONS=10
 for ((i=1; i<=$NUM_ITERATIONS; i++)); do
     # Run the second MapReduce job using mapred streaming
     mapred streaming \
@@ -82,5 +78,3 @@ hdfs dfs -cat "$HDFS_OUTPUT_DIR/*" | sort
 hdfs dfs -rm -r "$HDFS_INPUT_DIR"
 # hdfs dfs -rm -r "$HDFS_OUTPUT_DIR"
 hdfs dfs -rm -r "$HDFS_TEMP_DIR"
-
-echo "Hadoop job completed successfully!"
